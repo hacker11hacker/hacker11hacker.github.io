@@ -1,5 +1,5 @@
 /*!
- * The Hacker Side-Badge — מוקטן עם שמירה על יחס התמונה
+ * The Hacker Side-Badge — ללא צל/זוהר כלל
  * הטמעה: להדביק לפני </body> בכל אתר
  */
 (function () {
@@ -11,17 +11,11 @@
     '.hacker-badge{' +
       'position:fixed;top:50%;left:0;transform:translateY(-50%);z-index:999999;' +
       'display:flex;align-items:center;' +
-      /* הגובה הקומפקטי של הווידג'ט בצד המסך */
-      'height:100px;' +
+      'height:95px;' +
       'direction:rtl;background:#0a0c0e;' +
       'border:1.5px solid #35d130;border-left:none;' +
       'border-radius:0 10px 10px 0;' +
       'text-decoration:none;' +
-      'box-shadow:0 0 12px rgba(53, 209, 48, 0.35), 4px 0 20px rgba(0,0,0,0.6);' +
-      'transition:box-shadow .25s ease;' +
-    '}' +
-    '.hacker-badge:hover{' +
-      'box-shadow:0 0 22px rgba(53, 209, 48, 0.6), 6px 0 25px rgba(0,0,0,0.8);' +
     '}' +
     '.hacker-badge .hacker-img-wrap{' +
       'height:100%;' +
@@ -29,7 +23,6 @@
       'flex-shrink:0;' +
     '}' +
     '.hacker-badge .hacker-img-wrap img{' +
-      /* שומר בדיוק על הפרופורציות (יחס גובה-רוחב) של התמונה המקורית */
       'height:100%;width:auto;' +
       'display:block;' +
     '}' +
