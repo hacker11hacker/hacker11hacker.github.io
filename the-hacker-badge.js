@@ -12,7 +12,7 @@
       'position:fixed;top:50%;left:0;transform:translateY(-50%);z-index:999999;' +
       'display:flex;align-items:center;' +
       /* הגובה הקומפקטי של הווידג'ט בצד המסך */
-      'height:80px;' +
+      'height:100px;' +
       'direction:rtl;background:#0a0c0e;' +
       'border:1.5px solid #35d130;border-left:none;' +
       'border-radius:0 10px 10px 0;' +
