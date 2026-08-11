@@ -820,7 +820,9 @@ a:focus-visible, button:focus-visible {
      ========================================================= */
   function buildGvizUrl(spreadsheetId, sheetName) {
     const base = `https://docs.google.com/spreadsheets/d/${encodeURIComponent(spreadsheetId)}/gviz/tq`;
-    const params = new URLSearchParams({ tqx: "out:json" });
+    // headers=1 חשוב במיוחד: בלעדיו גוגל מנסה "לנחש" אם השורה הראשונה היא
+    // כותרות, והניחוש נכשל כמעט תמיד כשכל התאים הם טקסט (כמו בגיליון הזה)
+    const params = new URLSearchParams({ tqx: "out:json", headers: "1" });
     if (sheetName) params.set("sheet", sheetName);
     return `${base}?${params.toString()}`;
   }
@@ -845,14 +847,23 @@ a:focus-visible, button:focus-visible {
       throw new Error(detail);
     }
 
-    const cols = (data.table.cols || []).map((c) => c.label || c.id || "");
-    const dataRows = (data.table.rows || []).map((r) =>
-      (r.c || []).map((cell) => {
-        if (!cell) return "";
-        const val = cell.f !== undefined && cell.f !== null ? cell.f : cell.v;
-        return val === null || val === undefined ? "" : String(val);
-      })
-    );
+    const rowToArray = (r) => (r.c || []).map((cell) => {
+      if (!cell) return "";
+      const val = cell.f !== undefined && cell.f !== null ? cell.f : cell.v;
+      return val === null || val === undefined ? "" : String(val);
+    });
+
+    let cols = (data.table.cols || []).map((c) => (c.label || "").trim());
+    const dataRows = (data.table.rows || []).map(rowToArray);
+
+    // גיבוי: אם גוגל לא סיפק שמות כותרות אמיתיים (למשל "A"/"B" גנריים או ריק),
+    // נשתמש בשורת הנתונים הראשונה בתור כותרות בעצמנו
+    const looksGeneric = cols.every((c, i) => !c || c === `Col${i + 1}` || /^[A-Z]{1,2}$/.test(c));
+    if (looksGeneric && dataRows.length) {
+      cols = dataRows[0];
+      return [cols, ...dataRows.slice(1)];
+    }
+
     return [cols, ...dataRows];
   }
 
