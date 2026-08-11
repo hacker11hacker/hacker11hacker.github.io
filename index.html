@@ -18,9 +18,9 @@
    Design tokens
    ========================================================= */
 :root {
-  --bg: #EEF3FC;
+  --bg: #f4fdff;
   --surface: #FFFFFF;
-  --surface-2: #E3EAF9;
+  --surface-2: #f1f7fb;
   --text: #10142A;
   --text-muted: #545F7D;
   --border: #D6E0F5;
@@ -468,7 +468,7 @@ a { color: inherit; }
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(to top, rgba(10, 14, 27, 0.82) 0%, rgba(10, 14, 27, 0.15) 55%, transparent 80%);
+  background: linear-gradient(to top, rgba(10, 14, 27, 0.82) 0%, rgba(10, 14, 27, 0.15) 55%, transparent 50%);
   pointer-events: none;
 }
 
@@ -550,7 +550,7 @@ a { color: inherit; }
 .project-card:hover .project-link-underline { background-size: 100% 1.5px; }
 
 [data-theme="dark"] .project-media::after {
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.88) 0%, rgba(0, 0, 0, 0.2) 55%, transparent 80%);
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.88) 0%, rgba(0, 0, 0, 0.2) 55%, transparent 50%);
 }
 
 /* =========================================================
@@ -577,8 +577,8 @@ a { color: inherit; }
 }
 .profile-btn:hover { transform: translateY(-2px); opacity: 0.8; }
 .profile-btn img {
-  width: 32px;
-  height: 32px;
+  width: 50px;
+  height: 50px;
   border-radius: 50%;
   object-fit: cover;
   display: block;
