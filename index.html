@@ -338,9 +338,9 @@ a { color: inherit; }
 }
 
 .dash-icon {
-  width: 26px;
-  height: 26px;
-  border-radius: 50%;
+  width: 36px;       /* הגדלנו את הגודל מ-26px ל-36px */
+  height: 36px;      /* הגדלנו את הגודל מ-26px ל-36px */
+  border-radius: 8px; /* שינינו מ-50% לעיגול לפינות מעוגלות */
   overflow: hidden;
   background: var(--accent-soft);
   color: var(--accent-deep);
@@ -348,11 +348,16 @@ a { color: inherit; }
   place-items: center;
   font-family: var(--font-display);
   font-weight: 700;
-  font-size: 0.72rem;
+  font-size: 0.8rem; /* הגדלנו מעט את גופן האות */
   flex-shrink: 0;
 }
-.dash-icon img { width: 100%; height: 100%; object-fit: cover; }
 
+.dash-icon img { 
+  width: 100%; 
+  height: 100%; 
+  object-fit: contain; /* זה החלק שמונע חיתוך: מציג את כל התמונה */
+  background-color: transparent; /* מוודא שאין רקע לבן מוזר אם התמונה שקופה */
+}
 .dash-icons-empty {
   font-family: var(--font-mono);
   font-size: 0.8rem;
