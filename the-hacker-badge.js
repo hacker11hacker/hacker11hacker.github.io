@@ -1,5 +1,5 @@
 /*!
- * The Hacker Side-Badge — גודל דינאמי לפי התמונה
+ * The Hacker Side-Badge — מוקטן עם שמירה על יחס התמונה
  * הטמעה: להדביק לפני </body> בכל אתר
  */
 (function () {
@@ -11,11 +11,11 @@
     '.hacker-badge{' +
       'position:fixed;top:50%;left:0;transform:translateY(-50%);z-index:999999;' +
       'display:flex;align-items:center;' +
-      /* הגדרות גודל דינאמיות - מתאים את עצמו בדיוק לתמונה */
-      'height:auto;width:auto;' +
+      /* הגובה הקומפקטי של הווידג'ט בצד המסך */
+      'height:80px;' +
       'direction:rtl;background:#0a0c0e;' +
       'border:1.5px solid #35d130;border-left:none;' +
-      'border-radius:0 12px 12px 0;' +
+      'border-radius:0 10px 10px 0;' +
       'text-decoration:none;' +
       'box-shadow:0 0 12px rgba(53, 209, 48, 0.35), 4px 0 20px rgba(0,0,0,0.6);' +
       'transition:box-shadow .25s ease;' +
@@ -24,27 +24,27 @@
       'box-shadow:0 0 22px rgba(53, 209, 48, 0.6), 6px 0 25px rgba(0,0,0,0.8);' +
     '}' +
     '.hacker-badge .hacker-img-wrap{' +
+      'height:100%;' +
       'display:flex;align-items:center;justify-content:center;' +
       'flex-shrink:0;' +
     '}' +
     '.hacker-badge .hacker-img-wrap img{' +
-      /* התמונה קובעת את הגודל */
-      'display:block;width:auto;height:auto;' +
-      'max-height:40vh; /* רק למקרה שהתמונה ענקית וגולשת מהמסך */' +
+      /* שומר בדיוק על הפרופורציות (יחס גובה-רוחב) של התמונה המקורית */
+      'height:100%;width:auto;' +
+      'display:block;' +
     '}' +
     '.hacker-badge .hacker-text{' +
       'white-space:nowrap;overflow:hidden;' +
-      /* טריק לפתיחה דינאמית של טקסט בלי גודל קבוע */
       'max-width:0;opacity:0;padding:0;' +
       'text-align:center;font-family:system-ui,-apple-system,sans-serif;' +
-      'font-size:13.5px;font-weight:700;color:#35d130;' +
+      'font-size:13px;font-weight:700;color:#35d130;' +
       'transition:max-width .3s ease, opacity .2s ease, padding .3s ease;' +
     '}' +
     '.hacker-badge:hover .hacker-text{' +
-      'max-width:250px;opacity:1;padding:0 15px;' +
+      'max-width:220px;opacity:1;padding:0 14px;' +
     '}' +
     '.hacker-badge .hacker-text small{' +
-      'display:block;font-weight:500;color:#a3b8cc;font-size:11px;margin-top:4px;' +
+      'display:block;font-weight:500;color:#a3b8cc;font-size:10.5px;margin-top:3px;' +
     '}';
   document.head.appendChild(style);
 
