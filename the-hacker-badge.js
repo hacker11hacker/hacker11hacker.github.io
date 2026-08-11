@@ -1,7 +1,3 @@
-/*!
- * The Hacker Side-Badge — ללא צל/זוהר כלל
- * הטמעה: להדביק לפני </body> בכל אתר
- */
 (function () {
   var SITE_URL = "https://hacker11hacker.github.io/";
   var IMAGE_URL = "https://i.ibb.co/6R4d1zvK/the-hacker.png"; 
@@ -11,7 +7,7 @@
     '.hacker-badge{' +
       'position:fixed;top:50%;left:0;transform:translateY(-50%);z-index:999999;' +
       'display:flex;align-items:center;' +
-      'height:95px;' +
+      'height:110px;' +
       'direction:rtl;background:#0a0c0e;' +
       'border:1.5px solid #35d130;border-left:none;' +
       'border-radius:0 10px 10px 0;' +
