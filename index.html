@@ -390,6 +390,7 @@ a { color: inherit; }
   color: var(--text-muted);
   background: var(--surface);
 }
+.projects-status[hidden] { display: none; }
 .projects-status.is-error { border-color: var(--danger); color: var(--danger); }
 .status-title { font-weight: 700; color: var(--text); }
 .projects-status.is-error .status-title { color: var(--danger); }
@@ -417,83 +418,139 @@ a { color: inherit; }
 
 .projects-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 22px;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 28px;
 }
 
 .project-card {
   position: relative;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
-  overflow: hidden;
   display: flex;
   flex-direction: column;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background: var(--surface);
   box-shadow: var(--shadow);
-  transition: transform 0.2s ease, border-color 0.2s ease;
+  isolation: isolate;
+  transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.35s ease;
 }
-.project-card:hover { transform: translateY(-3px); border-color: var(--accent); }
+.project-card:hover { transform: translateY(-6px); }
+.project-card:hover .project-media img { transform: scale(1.06); }
+.project-card:hover .project-arrow { transform: translate(4px, -4px); }
+
+.project-media {
+  position: relative;
+  aspect-ratio: 4/3;
+  background: linear-gradient(155deg, var(--surface-2), var(--accent-soft));
+  overflow: hidden;
+}
+.project-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.project-media .fallback {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 2.6rem;
+  color: var(--accent-deep);
+  opacity: 0.35;
+}
+
+/* הצללה קבועה בתחתית התמונה כדי שהכותרת תמיד קריאה */
+.project-media::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(10, 14, 27, 0.82) 0%, rgba(10, 14, 27, 0.15) 55%, transparent 80%);
+  pointer-events: none;
+}
 
 .project-index {
   position: absolute;
-  top: 14px; right: 14px;
-  z-index: 1;
-  font-family: var(--font-mono);
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: var(--accent-deep);
-  background: color-mix(in srgb, var(--surface) 82%, transparent);
-  backdrop-filter: blur(4px);
-  padding: 3px 9px;
-  border-radius: 999px;
-  direction: ltr;
+  top: 16px;
+  inset-inline-start: 16px;
+  z-index: 2;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent-2);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent-2) 25%, transparent);
 }
 
-.project-media {
-  aspect-ratio: 16/9;
-  background: var(--surface-2);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
+.project-overlay-title {
+  position: absolute;
+  bottom: 0;
+  inset-inline: 0;
+  z-index: 2;
+  padding: 20px 22px;
+  color: #fff;
 }
-.project-media img { width: 100%; height: 100%; object-fit: cover; }
-.project-media .fallback {
-  width: 52px; height: 52px;
-  border-radius: var(--radius-md);
-  display: grid;
-  place-items: center;
-  background: var(--accent-soft);
-  color: var(--accent-deep);
+.project-overlay-title h3 {
   font-family: var(--font-display);
   font-weight: 700;
-  font-size: 1.3rem;
+  font-size: 1.2rem;
+  margin: 0;
+  text-shadow: 0 1px 12px rgba(0, 0, 0, 0.25);
 }
 
 .project-body {
-  padding: 18px 20px 22px;
+  padding: 18px 22px 22px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 14px;
   flex: 1;
 }
-.project-name { font-family: var(--font-display); font-weight: 700; font-size: 1.15rem; margin: 0; }
-.project-desc { color: var(--text-muted); font-size: 0.95rem; margin: 0 0 8px; flex: 1; }
+.project-desc {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  margin: 0;
+  flex: 1;
+  line-height: 1.6;
+}
 .project-link {
   align-self: flex-start;
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 9px 18px;
-  border-radius: 999px;
-  background: var(--accent-soft);
+  gap: 8px;
+  padding: 0;
+  background: none;
+  border: none;
   color: var(--accent-deep);
   font-weight: 600;
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   text-decoration: none;
-  transition: background 0.2s ease, color 0.2s ease;
+  font-family: var(--font-display);
 }
-.project-link:hover { background: var(--accent); color: #fff; }
+.project-link .project-arrow {
+  display: inline-flex;
+  transition: transform 0.25s ease;
+  font-size: 1rem;
+}
+.project-link::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+}
+.project-link-underline {
+  position: relative;
+  padding-bottom: 2px;
+  background-image: linear-gradient(var(--accent), var(--accent));
+  background-size: 0% 1.5px;
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  transition: background-size 0.25s ease;
+}
+.project-card:hover .project-link-underline { background-size: 100% 1.5px; }
+
+[data-theme="dark"] .project-media::after {
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.88) 0%, rgba(0, 0, 0, 0.2) 55%, transparent 80%);
+}
 
 /* =========================================================
    Footer
@@ -895,6 +952,7 @@ a:focus-visible, button:focus-visible {
     description: ["תיאור", "description", "desc"],
     image: ["תמונה", "image", "img", "תמונה (קישור)"],
     link: ["קישור", "link", "url", "כניסה לפרויקט"],
+    buttonText: ["טקסט כפתור", "כפתור", "טקסט", "buttontext", "button", "cta"],
   };
 
   function showProjectsStatus({ title, code, isError, showSpinner }) {
@@ -944,23 +1002,31 @@ a:focus-visible, button:focus-visible {
     const gridEl = document.getElementById("projects-grid");
     statusEl.hidden = true;
 
-    gridEl.innerHTML = projects.map((p, i) => `
+    gridEl.innerHTML = projects.map((p) => {
+      const cta = p.buttonText || "כניסה";
+      return `
       <article class="project-card">
-        <span class="project-index">${String(i + 1).padStart(2, "0")}</span>
         <div class="project-media">
           ${p.image
             ? `<img src="${escapeHtml(p.image)}" alt="${escapeHtml(p.name)}" loading="lazy">`
             : `<span class="fallback">${escapeHtml((p.name || "?").trim().charAt(0).toUpperCase())}</span>`}
+          <span class="project-index" aria-hidden="true"></span>
+          <div class="project-overlay-title">
+            <h3>${escapeHtml(p.name || "פרויקט ללא שם")}</h3>
+          </div>
         </div>
         <div class="project-body">
-          <h3 class="project-name">${escapeHtml(p.name || "פרויקט ללא שם")}</h3>
           ${p.description ? `<p class="project-desc">${escapeHtml(p.description)}</p>` : ""}
           ${p.link
-            ? `<a class="project-link" href="${escapeHtml(p.link)}" target="_blank" rel="noopener noreferrer">כניסה לפרויקט ←</a>`
+            ? `<a class="project-link" href="${escapeHtml(p.link)}" target="_blank" rel="noopener noreferrer">
+                 <span class="project-link-underline">${escapeHtml(cta)}</span>
+                 <span class="project-arrow" aria-hidden="true">←</span>
+               </a>`
             : ""}
         </div>
       </article>
-    `).join("");
+    `;
+    }).join("");
 
     updateProjectCount(projects.length);
     renderDashIcons(projects);
@@ -996,7 +1062,13 @@ a:focus-visible, button:focus-visible {
 
       const headers = rows[0].map(normalizeHeader);
       const projects = rows.slice(1)
-        .map((r) => mapRow(headers, r, PROJECT_ALIASES))
+        .map((r) => {
+          const p = mapRow(headers, r, PROJECT_ALIASES);
+          // גיבוי: אם עמודת "טקסט כפתור" לא זוהתה לפי שם הכותרת,
+          // ניקח את התוכן של העמודה החמישית (אינדקס 4) לפי מיקום
+          if (!p.buttonText) p.buttonText = (r[4] || "").trim();
+          return p;
+        })
         .filter((p) => p.name);
 
       if (!projects.length) {
@@ -1024,9 +1096,19 @@ a:focus-visible, button:focus-visible {
      פרופילים (כפתורים בפוטר)
      ========================================================= */
   const PROFILE_ALIASES = {
-    symbol: ["סמל", "symbol", "icon"],
+    symbol: ["סמל", "אייקון", "לוגו", "symbol", "icon", "logo"],
     link: ["קישור", "link", "url"],
   };
+
+  // גיבוי אחרון אם אין סמל בכלל: אות ראשונה של הדומיין, במקום אימוג'י גנרי
+  function domainInitial(url) {
+    try {
+      const host = new URL(url).hostname.replace(/^www\./, "");
+      return host.charAt(0).toUpperCase() || "•";
+    } catch (err) {
+      return "•";
+    }
+  }
 
   async function loadProfiles() {
     const hasCsv = Boolean((CONFIG.profilesCsvUrl || "").trim());
@@ -1044,14 +1126,20 @@ a:focus-visible, button:focus-visible {
 
       const headers = rows[0].map(normalizeHeader);
       const profiles = rows.slice(1)
-        .map((r) => mapRow(headers, r, PROFILE_ALIASES))
+        .map((r) => {
+          const p = mapRow(headers, r, PROFILE_ALIASES);
+          // גיבוי לפי מיקום: עמודה ראשונה = סמל, עמודה שנייה = קישור
+          if (!p.symbol) p.symbol = (r[0] || "").trim();
+          if (!p.link) p.link = (r[1] || "").trim();
+          return p;
+        })
         .filter((p) => p.link);
 
       if (!profiles.length) return;
 
       row.innerHTML = profiles.map((p) => `
         <a class="profile-btn" href="${escapeHtml(p.link)}" target="_blank" rel="noopener noreferrer">
-          <span>${escapeHtml(p.symbol || "🔗")}</span>
+          <span>${escapeHtml(p.symbol || domainInitial(p.link))}</span>
         </a>
       `).join("");
       row.hidden = false;
