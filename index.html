@@ -1,0 +1,1066 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title data-slot="page-title">the hacker</title>
+<meta name="description" content="דף הבית האישי שלי — פרויקטים וקצת עליי.">
+
+<link rel="icon" id="favicon" href="">
+
+<!-- גופנים: IBM Plex Sans Hebrew לכותרות (משפחת Plex, אופי טכני), Heebo לטקסט רגיל, IBM Plex Mono לפרטים -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Hebrew:wght@500;600;700&family=Heebo:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+/* =========================================================
+   Design tokens
+   ========================================================= */
+:root {
+  --bg: #EEF3FC;
+  --surface: #FFFFFF;
+  --surface-2: #E3EAF9;
+  --text: #10142A;
+  --text-muted: #545F7D;
+  --border: #D6E0F5;
+  --accent: #3057F0;
+  --accent-deep: #1B3AC2;
+  --accent-soft: #E4E9FF;
+  --accent-2: #16B4C4;
+  --success: #1FA971;
+  --danger: #D14343;
+  --shadow: 0 1px 2px rgba(16, 20, 42, 0.04), 0 12px 30px rgba(16, 20, 42, 0.08);
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 24px;
+  --font-display: "IBM Plex Sans Hebrew", "Heebo", system-ui, sans-serif;
+  --font-body: "Heebo", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+  color-scheme: light;
+}
+
+[data-theme="dark"] {
+  --bg: #0A0E1B;
+  --surface: #121728;
+  --surface-2: #1A2138;
+  --text: #E7EBFB;
+  --text-muted: #8A93B8;
+  --border: #232C4A;
+  --accent: #6C87FF;
+  --accent-deep: #93A6FF;
+  --accent-soft: #1B2246;
+  --accent-2: #3FD2E0;
+  --success: #3FDE9A;
+  --danger: #E38468;
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.35), 0 16px 34px rgba(0, 0, 0, 0.4);
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+a { color: inherit; }
+
+.eyebrow {
+  font-family: var(--font-mono);
+  direction: ltr;
+  unicode-bidi: isolate;
+  text-align: end;
+  font-size: 0.8rem;
+  letter-spacing: 0.04em;
+  color: var(--accent);
+  margin: 0 0 0.6rem;
+}
+
+.section-inner {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.section-title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(1.6rem, 3vw, 2.2rem);
+  margin: 0;
+}
+
+/* =========================================================
+   Header
+   ========================================================= */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: color-mix(in srgb, var(--bg) 85%, transparent);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border);
+}
+
+.topbar-inner {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 14px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.05rem;
+}
+
+.brand-mark { color: var(--accent); font-size: 0.85rem; }
+.brand-logo {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  object-fit: cover;
+  display: none;
+}
+.brand-name { color: var(--text); }
+
+.nav { display: flex; gap: 22px; }
+
+.nav a {
+  text-decoration: none;
+  color: var(--text-muted);
+  font-weight: 500;
+  font-size: 0.95rem;
+  transition: color 0.2s ease;
+}
+.nav a:hover { color: var(--accent); }
+
+.theme-toggle {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  cursor: pointer;
+  color: var(--text);
+  transition: border-color 0.2s ease, transform 0.15s ease;
+}
+.theme-toggle:hover { border-color: var(--accent); }
+.theme-toggle:active { transform: scale(0.94); }
+.theme-toggle .icon {
+  width: 18px; height: 18px;
+  fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round;
+}
+.icon-moon { display: none; }
+[data-theme="dark"] .icon-sun { display: none; }
+[data-theme="dark"] .icon-moon { display: block; }
+
+/* =========================================================
+   Hero
+   ========================================================= */
+.hero {
+  padding: 76px 24px 100px;
+  background-image: radial-gradient(var(--border) 1px, transparent 1px);
+  background-size: 26px 26px;
+  background-position: -13px -13px;
+}
+
+.hero-inner {
+  max-width: 1080px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1.05fr 1fr;
+  gap: 56px;
+  align-items: center;
+}
+
+.hero-logo {
+  width: 56px;
+  height: 56px;
+  border-radius: var(--radius-md);
+  object-fit: cover;
+  margin-bottom: 20px;
+  box-shadow: var(--shadow);
+  display: none;
+}
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 16px;
+  border-radius: 999px;
+  background: var(--accent-soft);
+  color: var(--accent-deep);
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-bottom: 20px;
+}
+
+.hero-title {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(2rem, 4.2vw, 3.1rem);
+  line-height: 1.28;
+  margin: 0 0 18px;
+}
+
+.hero-title .highlight {
+  color: var(--accent-deep);
+  border-bottom: 5px solid var(--accent-soft);
+  padding-bottom: 2px;
+}
+
+.hero-subtitle {
+  color: var(--text-muted);
+  font-size: 1.1rem;
+  max-width: 46ch;
+  margin: 0 0 32px;
+}
+
+.hero-actions { display: flex; gap: 14px; flex-wrap: wrap; }
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 24px;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  text-decoration: none;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: transform 0.15s ease, background 0.2s ease, border-color 0.2s ease;
+}
+.btn:active { transform: scale(0.97); }
+.btn-primary { background: var(--accent); color: #FFFFFF; }
+.btn-primary:hover { background: var(--accent-deep); }
+
+/* --- Dashboard card (signature element) --- */
+.dash-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+  padding: 24px;
+}
+
+.dash-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  margin-bottom: 20px;
+}
+
+.status-dot {
+  width: 9px; height: 9px;
+  border-radius: 50%;
+  background: var(--success);
+  animation: pulse 2.2s ease-out infinite;
+}
+
+@keyframes pulse {
+  0%   { box-shadow: 0 0 0 0 color-mix(in srgb, var(--success) 45%, transparent); }
+  70%  { box-shadow: 0 0 0 9px color-mix(in srgb, var(--success) 0%, transparent); }
+  100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--success) 0%, transparent); }
+}
+
+.dash-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.dash-tile {
+  background: var(--surface-2);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.dash-tile-wide { grid-column: span 2; align-items: center; text-align: center; }
+
+.dash-label {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  direction: ltr;
+  unicode-bidi: isolate;
+  text-align: start;
+}
+.dash-tile-wide .dash-label { text-align: center; }
+
+.dash-value {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  font-size: 1.5rem;
+  color: var(--text);
+  direction: ltr;
+  unicode-bidi: isolate;
+}
+
+.dash-icons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.dash-icon {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: var(--accent-soft);
+  color: var(--accent-deep);
+  display: grid;
+  place-items: center;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 0.72rem;
+  flex-shrink: 0;
+}
+.dash-icon img { width: 100%; height: 100%; object-fit: cover; }
+
+.dash-icons-empty {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+/* =========================================================
+   Projects
+   ========================================================= */
+.projects { padding: 60px 24px 110px; }
+
+.projects-heading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.projects-count-badge {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--accent-deep);
+  background: var(--accent-soft);
+  padding: 6px 14px;
+  border-radius: 999px;
+}
+
+.projects-status {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 28px 24px;
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-md);
+  color: var(--text-muted);
+  background: var(--surface);
+}
+.projects-status.is-error { border-color: var(--danger); color: var(--danger); }
+.status-title { font-weight: 700; color: var(--text); }
+.projects-status.is-error .status-title { color: var(--danger); }
+.status-code {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  direction: ltr;
+  unicode-bidi: isolate;
+  background: var(--surface-2);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  width: 100%;
+  overflow-x: auto;
+  white-space: pre-wrap;
+}
+
+.spinner {
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  border: 2px solid var(--border);
+  border-top-color: var(--accent);
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.projects-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 22px;
+}
+
+.project-card {
+  position: relative;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: var(--shadow);
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+.project-card:hover { transform: translateY(-3px); border-color: var(--accent); }
+
+.project-index {
+  position: absolute;
+  top: 14px; right: 14px;
+  z-index: 1;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--accent-deep);
+  background: color-mix(in srgb, var(--surface) 82%, transparent);
+  backdrop-filter: blur(4px);
+  padding: 3px 9px;
+  border-radius: 999px;
+  direction: ltr;
+}
+
+.project-media {
+  aspect-ratio: 16/9;
+  background: var(--surface-2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+.project-media img { width: 100%; height: 100%; object-fit: cover; }
+.project-media .fallback {
+  width: 52px; height: 52px;
+  border-radius: var(--radius-md);
+  display: grid;
+  place-items: center;
+  background: var(--accent-soft);
+  color: var(--accent-deep);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.3rem;
+}
+
+.project-body {
+  padding: 18px 20px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+}
+.project-name { font-family: var(--font-display); font-weight: 700; font-size: 1.15rem; margin: 0; }
+.project-desc { color: var(--text-muted); font-size: 0.95rem; margin: 0 0 8px; flex: 1; }
+.project-link {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 18px;
+  border-radius: 999px;
+  background: var(--accent-soft);
+  color: var(--accent-deep);
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-decoration: none;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+.project-link:hover { background: var(--accent); color: #fff; }
+
+/* =========================================================
+   Footer
+   ========================================================= */
+.footer { border-top: 1px solid var(--border); padding: 32px 24px; }
+
+.profiles-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.profile-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: 999px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  text-decoration: none;
+  color: var(--text);
+  font-size: 0.95rem;
+  font-weight: 500;
+  transition: border-color 0.2s ease, transform 0.15s ease;
+}
+.profile-btn:hover { border-color: var(--accent); transform: translateY(-2px); }
+
+.footer-inner {
+  display: flex;
+  justify-content: center;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+/* =========================================================
+   Responsive
+   ========================================================= */
+@media (max-width: 860px) {
+  .hero-inner { grid-template-columns: 1fr; }
+  .nav { gap: 14px; }
+}
+@media (max-width: 480px) {
+  .topbar-inner { padding: 12px 16px; }
+  .hero { padding: 48px 16px 72px; }
+  .section-inner { padding: 0 16px; }
+}
+
+a:focus-visible, button:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+</style>
+</head>
+<body>
+
+<!-- ===================== HEADER ===================== -->
+<header class="topbar">
+  <div class="topbar-inner">
+    <a href="#home" class="brand">
+      <span class="brand-mark" id="brand-mark" aria-hidden="true">◆</span>
+      <img class="brand-logo" id="brand-logo" alt="">
+      <span class="brand-name" data-slot="site-name">the hacker</span>
+    </a>
+
+    <nav class="nav">
+      <a href="#projects">פרויקטים</a>
+    </nav>
+
+    <button id="theme-toggle" class="theme-toggle" type="button" aria-label="החלף מצב תצוגה בהיר/כהה">
+      <svg class="icon icon-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path></svg>
+      <svg class="icon icon-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"></path></svg>
+    </button>
+  </div>
+</header>
+
+<main>
+
+  <!-- ===================== HERO ===================== -->
+  <section class="hero" id="home">
+    <div class="hero-inner">
+      <div class="hero-text">
+        <img class="hero-logo" id="hero-logo" alt="">
+        <span class="hero-badge" id="hero-badge">פרופיל · <span data-slot="site-name-badge">the hacker</span></span>
+        <h1 class="hero-title">
+          שלום, אני <span class="highlight" data-slot="site-name-hero">the hacker</span>
+        </h1>
+        <p class="hero-subtitle">
+          חי בטרמינל, נושם קוד, ותמיד מחפש עוד באג אחד לתקן 😏
+        </p>
+        <div class="hero-actions">
+          <a href="#projects" class="btn btn-primary">לצפייה בפרויקטים</a>
+        </div>
+      </div>
+
+      <!-- כרטיס "דשבורד" — האלמנט החתימה של הדף -->
+      <div class="dash-card" aria-label="לוח מצב קצר">
+        <div class="dash-status">
+          <span class="status-dot" aria-hidden="true"></span>
+          <span>המערכת פעילה</span>
+        </div>
+
+        <div class="dash-grid">
+          <div class="dash-tile">
+            <span class="dash-label">זמן בעמוד</span>
+            <span class="dash-value" id="uptime">00:00</span>
+          </div>
+          <div class="dash-tile">
+            <span class="dash-label">כניסות שלך לעמוד</span>
+            <span class="dash-value" id="visit-count">—</span>
+          </div>
+          <div class="dash-tile dash-tile-wide">
+            <span class="dash-label">פרויקטים</span>
+            <div class="dash-icons" id="dash-icons">
+              <span class="dash-icons-empty">…</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== PROJECTS ===================== -->
+  <section class="projects" id="projects">
+    <div class="section-inner">
+      <div class="projects-heading">
+        <div>
+          <p class="eyebrow">// פרויקטים</p>
+          <h2 class="section-title">הפרויקטים שלי</h2>
+        </div>
+        <span class="projects-count-badge" id="projects-count-badge" hidden></span>
+      </div>
+
+      <div id="projects-status" class="projects-status" hidden></div>
+      <div id="projects-grid" class="projects-grid"></div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ===================== FOOTER ===================== -->
+<footer class="footer">
+  <div class="section-inner">
+    <div class="profiles-row" id="profiles-row" hidden></div>
+    <div class="footer-inner">
+      <span>© <span id="year"></span> <span data-slot="site-name-footer">the hacker</span></span>
+    </div>
+  </div>
+</footer>
+
+<script src="config.js"></script>
+<script>
+(() => {
+  "use strict";
+
+  /* =========================================================
+     שם האתר, לוגו ופאביקון – מוזרקים מ-CONFIG
+     ========================================================= */
+  function applySiteIdentity() {
+    const name = CONFIG.siteName || "the hacker";
+    document.querySelectorAll(
+      "[data-slot='site-name'], [data-slot='site-name-hero'], [data-slot='site-name-footer'], [data-slot='site-name-badge']"
+    ).forEach((el) => { el.textContent = name; });
+
+    const titleEl = document.querySelector("[data-slot='page-title']");
+    if (titleEl) titleEl.textContent = `${name} — ${CONFIG.siteTagline || ""}`.trim();
+
+    const yearEl = document.getElementById("year");
+    if (yearEl) yearEl.textContent = new Date().getFullYear();
+
+    const logoUrl = (CONFIG.logoUrl || "").trim();
+    const favicon = document.getElementById("favicon");
+    const brandLogo = document.getElementById("brand-logo");
+    const brandMark = document.getElementById("brand-mark");
+    const heroLogo = document.getElementById("hero-logo");
+    const heroBadge = document.getElementById("hero-badge");
+
+    if (logoUrl) {
+      if (favicon) favicon.setAttribute("href", logoUrl);
+
+      if (brandLogo) { brandLogo.src = logoUrl; brandLogo.style.display = "block"; }
+      if (brandMark) brandMark.style.display = "none";
+
+      if (heroLogo) { heroLogo.src = logoUrl; heroLogo.style.display = "block"; }
+      if (heroBadge) heroBadge.style.display = "none";
+    } else {
+      // פאביקון ברירת מחדל: אות ראשונה של השם על רקע accent, בלי צורך בקובץ חיצוני
+      if (favicon) {
+        const letter = name.trim().charAt(0).toUpperCase();
+        const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="%233057F0"/><text x="32" y="42" font-family="sans-serif" font-size="32" font-weight="700" fill="white" text-anchor="middle">${letter}</text></svg>`;
+        favicon.setAttribute("href", `data:image/svg+xml,${svg}`);
+      }
+    }
+  }
+
+  /* =========================================================
+     מצב כהה / בהיר
+     ========================================================= */
+  function initTheme() {
+    const root = document.documentElement;
+    const toggle = document.getElementById("theme-toggle");
+    const stored = localStorage.getItem("theme");
+    const systemPrefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    const initial = stored || (systemPrefersDark ? "dark" : "light");
+
+    if (initial === "dark") root.setAttribute("data-theme", "dark");
+
+    toggle.addEventListener("click", () => {
+      const isDark = root.getAttribute("data-theme") === "dark";
+      if (isDark) {
+        root.removeAttribute("data-theme");
+        localStorage.setItem("theme", "light");
+      } else {
+        root.setAttribute("data-theme", "dark");
+        localStorage.setItem("theme", "dark");
+      }
+    });
+  }
+
+  /* =========================================================
+     כרטיס הדשבורד: טיימר זמן-בעמוד + מונה כניסות מקומי
+     ========================================================= */
+  function initDashboard() {
+    const startedAt = Date.now();
+    const uptimeEl = document.getElementById("uptime");
+
+    if (uptimeEl) {
+      const tick = () => {
+        const seconds = Math.floor((Date.now() - startedAt) / 1000);
+        const mm = String(Math.floor(seconds / 60)).padStart(2, "0");
+        const ss = String(seconds % 60).padStart(2, "0");
+        uptimeEl.textContent = `${mm}:${ss}`;
+      };
+      tick();
+      setInterval(tick, 1000);
+    }
+
+    const visitEl = document.getElementById("visit-count");
+    if (visitEl) {
+      try {
+        const count = (parseInt(localStorage.getItem("pageVisits") || "0", 10) || 0) + 1;
+        localStorage.setItem("pageVisits", String(count));
+        visitEl.textContent = String(count);
+      } catch (err) {
+        visitEl.textContent = "1";
+      }
+    }
+  }
+
+  function escapeHtml(str) {
+    return String(str).replace(/[&<>"']/g, (c) => ({
+      "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;",
+    }[c]));
+  }
+
+  /* =========================================================
+     CSV helpers (משותף לגיליון פרויקטים וגיליון פרופילים)
+     ========================================================= */
+  function parseCsv(text) {
+    const rows = [];
+    let row = [];
+    let field = "";
+    let inQuotes = false;
+
+    for (let i = 0; i < text.length; i += 1) {
+      const char = text[i];
+      const next = text[i + 1];
+
+      if (inQuotes) {
+        if (char === '"' && next === '"') { field += '"'; i += 1; }
+        else if (char === '"') { inQuotes = false; }
+        else { field += char; }
+      } else if (char === '"') {
+        inQuotes = true;
+      } else if (char === ",") {
+        row.push(field); field = "";
+      } else if (char === "\n") {
+        row.push(field); field = "";
+        rows.push(row); row = [];
+      } else if (char === "\r") {
+        // skip
+      } else {
+        field += char;
+      }
+    }
+    if (field.length || row.length) { row.push(field); rows.push(row); }
+    return rows.filter((r) => r.some((c) => c.trim() !== ""));
+  }
+
+  function normalizeHeader(h) {
+    return String(h || "").trim().toLowerCase();
+  }
+
+  function mapRow(headers, row, aliasMap) {
+    const obj = {};
+    Object.entries(aliasMap).forEach(([key, aliases]) => {
+      const idx = headers.findIndex((h) => aliases.some((a) => normalizeHeader(a) === h));
+      obj[key] = idx > -1 ? (row[idx] || "").trim() : "";
+    });
+    return obj;
+  }
+
+  // fetch עם ניסיון חוזר קצר אחד, כדי להתמודד עם הפניות 307 זמניות של גוגל שיטס
+  async function fetchWithRetry(url, attempts = 2) {
+    let lastErr;
+    for (let i = 0; i < attempts; i += 1) {
+      try {
+        const res = await fetch(url, { cache: "no-store", redirect: "follow" });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return await res.text();
+      } catch (err) {
+        lastErr = err;
+        if (i < attempts - 1) await new Promise((r) => setTimeout(r, 800));
+      }
+    }
+    throw lastErr;
+  }
+
+  /* =========================================================
+     גישה ישירה לגיליון דרך gviz (מומלץ - יציבה יותר מ-CSV)
+     דורשת שהגיליון משותף כ"כל מי שיש לו את הקישור - צפייה"
+     ========================================================= */
+  function buildGvizUrl(spreadsheetId, sheetName) {
+    const base = `https://docs.google.com/spreadsheets/d/${encodeURIComponent(spreadsheetId)}/gviz/tq`;
+    const params = new URLSearchParams({ tqx: "out:json" });
+    if (sheetName) params.set("sheet", sheetName);
+    return `${base}?${params.toString()}`;
+  }
+
+  // התשובה מגיעה עטופה כטקסט JS, לדוגמה:
+  // /*O_o*/\ngoogle.visualization.Query.setResponse({...});
+  // אז שולפים את בלוק ה-JSON שבתוך ההשמה ומפרקים אותו ל"שורות" כמו CSV
+  function parseGvizJson(text) {
+    const start = text.indexOf("{");
+    const end = text.lastIndexOf("}");
+    if (start === -1 || end === -1 || end < start) {
+      throw new Error("תשובה לא צפויה מהגיליון (gviz)");
+    }
+    let data;
+    try {
+      data = JSON.parse(text.slice(start, end + 1));
+    } catch (err) {
+      throw new Error("לא הצלחתי לפענח את תשובת הגיליון (gviz)");
+    }
+    if (data.status === "error") {
+      const detail = (data.errors && data.errors[0] && data.errors[0].detailed_message) || "שגיאה בגיליון";
+      throw new Error(detail);
+    }
+
+    const cols = (data.table.cols || []).map((c) => c.label || c.id || "");
+    const dataRows = (data.table.rows || []).map((r) =>
+      (r.c || []).map((cell) => {
+        if (!cell) return "";
+        const val = cell.f !== undefined && cell.f !== null ? cell.f : cell.v;
+        return val === null || val === undefined ? "" : String(val);
+      })
+    );
+    return [cols, ...dataRows];
+  }
+
+  // מחזיר את שורות הגיליון (מערך מערכים, שורה ראשונה = כותרות),
+  // באמצעות gviz אם spreadsheetId מוגדר, אחרת נופל לקישור CSV הישן
+  async function loadSheetRows({ csvUrl, spreadsheetId, sheetName }) {
+    const trimmedCsvUrl = (csvUrl || "").trim();
+    const trimmedSpreadsheetId = (spreadsheetId || "").trim();
+
+    if (trimmedCsvUrl) {
+      const text = await fetchWithRetry(trimmedCsvUrl);
+      return parseCsv(text);
+    }
+
+    if (trimmedSpreadsheetId) {
+      const url = buildGvizUrl(trimmedSpreadsheetId, sheetName);
+      const text = await fetchWithRetry(url);
+      return parseGvizJson(text);
+    }
+
+    return null;
+  }
+
+  /* =========================================================
+     פרויקטים
+     ========================================================= */
+  const PROJECT_ALIASES = {
+    name: ["שם", "שם הפרויקט", "name", "title"],
+    description: ["תיאור", "description", "desc"],
+    image: ["תמונה", "image", "img", "תמונה (קישור)"],
+    link: ["קישור", "link", "url", "כניסה לפרויקט"],
+  };
+
+  function showProjectsStatus({ title, code, isError, showSpinner }) {
+    const statusEl = document.getElementById("projects-status");
+    const gridEl = document.getElementById("projects-grid");
+    gridEl.innerHTML = "";
+    statusEl.hidden = false;
+    statusEl.classList.toggle("is-error", Boolean(isError));
+    statusEl.innerHTML = `
+      ${showSpinner ? '<div class="spinner" aria-hidden="true"></div>' : ""}
+      <div class="status-title">${escapeHtml(title)}</div>
+      ${code ? `<div class="status-code">${escapeHtml(code)}</div>` : ""}
+    `;
+  }
+
+  function updateProjectCount(count) {
+    const badgeEl = document.getElementById("projects-count-badge");
+    if (badgeEl) {
+      if (count > 0) { badgeEl.hidden = false; badgeEl.textContent = `${count} פרויקטים`; }
+      else { badgeEl.hidden = true; }
+    }
+  }
+
+  function renderDashIcons(projects) {
+    const container = document.getElementById("dash-icons");
+    if (!container) return;
+
+    if (!projects.length) {
+      container.innerHTML = '<span class="dash-icons-empty">אין עדיין</span>';
+      return;
+    }
+
+    const cap = 10;
+    const shown = projects.slice(0, cap);
+    const extra = projects.length - shown.length;
+
+    container.innerHTML = shown.map((p) => {
+      const letter = escapeHtml((p.name || "?").trim().charAt(0).toUpperCase());
+      return p.image
+        ? `<span class="dash-icon" title="${escapeHtml(p.name)}"><img src="${escapeHtml(p.image)}" alt=""></span>`
+        : `<span class="dash-icon" title="${escapeHtml(p.name)}">${letter}</span>`;
+    }).join("") + (extra > 0 ? `<span class="dash-icon">+${extra}</span>` : "");
+  }
+
+  function renderProjects(projects) {
+    const statusEl = document.getElementById("projects-status");
+    const gridEl = document.getElementById("projects-grid");
+    statusEl.hidden = true;
+
+    gridEl.innerHTML = projects.map((p, i) => `
+      <article class="project-card">
+        <span class="project-index">${String(i + 1).padStart(2, "0")}</span>
+        <div class="project-media">
+          ${p.image
+            ? `<img src="${escapeHtml(p.image)}" alt="${escapeHtml(p.name)}" loading="lazy">`
+            : `<span class="fallback">${escapeHtml((p.name || "?").trim().charAt(0).toUpperCase())}</span>`}
+        </div>
+        <div class="project-body">
+          <h3 class="project-name">${escapeHtml(p.name || "פרויקט ללא שם")}</h3>
+          ${p.description ? `<p class="project-desc">${escapeHtml(p.description)}</p>` : ""}
+          ${p.link
+            ? `<a class="project-link" href="${escapeHtml(p.link)}" target="_blank" rel="noopener noreferrer">כניסה לפרויקט ←</a>`
+            : ""}
+        </div>
+      </article>
+    `).join("");
+
+    updateProjectCount(projects.length);
+    renderDashIcons(projects);
+  }
+
+  async function loadProjects() {
+    const hasCsv = Boolean((CONFIG.sheetCsvUrl || "").trim());
+    const hasSpreadsheetId = Boolean((CONFIG.spreadsheetId || "").trim());
+
+    if (!hasCsv && !hasSpreadsheetId) {
+      showProjectsStatus({
+        title: "עדיין לא חובר גיליון פרויקטים",
+        code: "פתחו את config.js והגדירו spreadsheetId (מומלץ) או sheetCsvUrl",
+      });
+      renderDashIcons([]);
+      return;
+    }
+
+    showProjectsStatus({ title: "טוען פרויקטים...", showSpinner: true });
+
+    try {
+      const rows = await loadSheetRows({
+        csvUrl: CONFIG.sheetCsvUrl,
+        spreadsheetId: CONFIG.spreadsheetId,
+        sheetName: CONFIG.projectsSheetName,
+      });
+
+      if (!rows || rows.length < 2) {
+        showProjectsStatus({ title: "לא נמצאו פרויקטים בגיליון עדיין" });
+        renderDashIcons([]);
+        return;
+      }
+
+      const headers = rows[0].map(normalizeHeader);
+      const projects = rows.slice(1)
+        .map((r) => mapRow(headers, r, PROJECT_ALIASES))
+        .filter((p) => p.name);
+
+      if (!projects.length) {
+        showProjectsStatus({ title: "לא נמצאו פרויקטים בגיליון עדיין" });
+        renderDashIcons([]);
+        return;
+      }
+
+      renderProjects(projects);
+    } catch (err) {
+      const msg = String(err && err.message || err);
+      const is307 = msg.includes("307");
+      showProjectsStatus({
+        title: "לא הצלחתי לטעון את הפרויקטים",
+        code: is307
+          ? "שגיאה 307: הפניה זמנית מגוגל שיטס. חכו כמה דקות אחרי הפרסום ורעננו, או ראו את ההערה ב-config.js לפתרון קבוע."
+          : msg,
+        isError: true,
+      });
+      renderDashIcons([]);
+    }
+  }
+
+  /* =========================================================
+     פרופילים (כפתורים בפוטר)
+     ========================================================= */
+  const PROFILE_ALIASES = {
+    symbol: ["סמל", "symbol", "icon"],
+    link: ["קישור", "link", "url"],
+  };
+
+  async function loadProfiles() {
+    const hasCsv = Boolean((CONFIG.profilesCsvUrl || "").trim());
+    const hasSpreadsheetId = Boolean((CONFIG.spreadsheetId || "").trim());
+    const row = document.getElementById("profiles-row");
+    if ((!hasCsv && !hasSpreadsheetId) || !row) return;
+
+    try {
+      const rows = await loadSheetRows({
+        csvUrl: CONFIG.profilesCsvUrl,
+        spreadsheetId: CONFIG.spreadsheetId,
+        sheetName: CONFIG.profilesSheetName,
+      });
+      if (!rows || rows.length < 2) return;
+
+      const headers = rows[0].map(normalizeHeader);
+      const profiles = rows.slice(1)
+        .map((r) => mapRow(headers, r, PROFILE_ALIASES))
+        .filter((p) => p.link);
+
+      if (!profiles.length) return;
+
+      row.innerHTML = profiles.map((p) => `
+        <a class="profile-btn" href="${escapeHtml(p.link)}" target="_blank" rel="noopener noreferrer">
+          <span>${escapeHtml(p.symbol || "🔗")}</span>
+        </a>
+      `).join("");
+      row.hidden = false;
+    } catch (err) {
+      // סקשן עיטורי ולא קריטי - נכשל בשקט בלי להציג שגיאה למשתמש
+      console.warn("profiles load failed:", err);
+    }
+  }
+
+  /* =========================================================
+     Init
+     ========================================================= */
+  document.addEventListener("DOMContentLoaded", () => {
+    applySiteIdentity();
+    initTheme();
+    initDashboard();
+    loadProjects();
+    loadProfiles();
+  });
+})();
+</script>
+</body>
+</html>
