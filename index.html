@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title data-slot="page-title">the hacker</title>
-<meta name="description" content="דף הבית האישי שלי — פרויקטים וקצת עליי.">
+<meta name="description" content="דף הבית שלי.">
 
 <link rel="icon" id="favicon" href="">
 
@@ -18,7 +18,7 @@
    Design tokens
    ========================================================= */
 :root {
-  --bg: #f4fdff;
+  --bg: #F7F7FB;
   --surface: #FFFFFF;
   --surface-2: #f1f7fb;
   --text: #10142A;
@@ -643,7 +643,7 @@ a:focus-visible, button:focus-visible {
         <img class="hero-logo" id="hero-logo" alt="">
         <span class="hero-badge" id="hero-badge">פרופיל · <span data-slot="site-name-badge">the hacker</span></span>
         <h1 class="hero-title">
-          שלום, אני <span class="highlight" data-slot="site-name-hero">the hacker</span>
+          נעים להכיר: <span class="highlight" data-slot="site-name-hero">the hacker</span>
         </h1>
         <p class="hero-subtitle">
           נושם קוד ומחפש עוד באג לתקן <img src="https://fonts.gstatic.com/s/e/notoemoji/17.0/1f60f/32.png" alt="smirk emoji" class="emoji-img" style="vertical-align: -10px;">
@@ -657,7 +657,7 @@ a:focus-visible, button:focus-visible {
       <div class="dash-card" aria-label="לוח מצב קצר">
         <div class="dash-status">
           <span class="status-dot" aria-hidden="true"></span>
-          <span>המערכת פעילה</span>
+          <span>פעיל</span>
         </div>
 
         <div class="dash-grid">
@@ -667,7 +667,7 @@ a:focus-visible, button:focus-visible {
           </div>
           <div class="dash-tile">
             <span class="dash-label">כניסות שלך לעמוד</span>
-            <span class="dash-value" id="visit-count">—</span>
+            <span class="dash-value" id="visit-count">-</span>
           </div>
           <div class="dash-tile dash-tile-wide">
             <span class="dash-label">פרויקטים</span>
@@ -686,7 +686,7 @@ a:focus-visible, button:focus-visible {
       <div class="projects-heading">
         <div>
           <p class="eyebrow">// פרויקטים</p>
-          <h2 class="section-title">הפרויקטים שלי</h2>
+          <h2 class="section-title">פרויקטים</h2>
         </div>
         <span class="projects-count-badge" id="projects-count-badge" hidden></span>
       </div>
@@ -721,7 +721,7 @@ a:focus-visible, button:focus-visible {
     ).forEach((el) => { el.textContent = name; });
 
     const titleEl = document.querySelector("[data-slot='page-title']");
-    if (titleEl) titleEl.textContent = `${name} — ${CONFIG.siteTagline || ""}`.trim();
+    if (titleEl) titleEl.textContent = `${name} - ${CONFIG.siteTagline || ""}`.trim();
 
     const yearEl = document.getElementById("year");
     if (yearEl) yearEl.textContent = new Date().getFullYear();
