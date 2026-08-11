@@ -463,15 +463,6 @@ a { color: inherit; }
   opacity: 0.35;
 }
 
-/* הצללה קבועה בתחתית התמונה כדי שהכותרת תמיד קריאה */
-.project-media::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(to top, rgba(10, 14, 27, 0.82) 0%, rgba(10, 14, 27, 0.15) 55%, transparent 20%);
-  pointer-events: none;
-}
-
 .project-index {
   position: absolute;
   top: 16px;
@@ -486,18 +477,29 @@ a { color: inherit; }
 
 .project-overlay-title {
   position: absolute;
-  bottom: 0;
-  inset-inline: 0;
+  bottom: 16px; /* מרווח יפה מלמטה */
+  inset-inline-start: 16px; /* מרווח מהצד */
   z-index: 2;
-  padding: 20px 22px;
-  color: #fff;
 }
+
 .project-overlay-title h3 {
   font-family: var(--font-display);
   font-weight: 700;
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   margin: 0;
-  text-shadow: 0 1px 12px rgba(0, 0, 0, 0.25);
+  
+  /* כאן הקסם של הצבעים ההפוכים */
+  background: var(--text); 
+  color: var(--surface); 
+  
+  /* יצירת צורת האליפסה (גלולה) */
+  padding: 6px 18px;
+  border-radius: 999px; 
+  display: inline-block; /* דואג שהאליפסה תעטוף בדיוק את אורך הטקסט */
+  
+  /* צל קל כדי להבליט את האליפסה מעל התמונה */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  text-shadow: none; /* ביטול הצל הישן של הטקסט */
 }
 
 .project-body {
@@ -548,10 +550,6 @@ a { color: inherit; }
   transition: background-size 0.25s ease;
 }
 .project-card:hover .project-link-underline { background-size: 100% 1.5px; }
-
-[data-theme="dark"] .project-media::after {
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.88) 0%, rgba(0, 0, 0, 0.2) 55%, transparent 20%);
-}
 
 /* =========================================================
    Footer
@@ -648,7 +646,7 @@ a:focus-visible, button:focus-visible {
           שלום, אני <span class="highlight" data-slot="site-name-hero">the hacker</span>
         </h1>
         <p class="hero-subtitle">
-          נושם קוד ומחפש עוד באג לתקן <img src="https://fonts.gstatic.com/s/e/notoemoji/17.0/1f60f/32.png" alt="smirk emoji" class="emoji-img" style="vertical-align: -5px;">
+          נושם קוד ומחפש עוד באג לתקן <img src="https://fonts.gstatic.com/s/e/notoemoji/17.0/1f60f/32.png" alt="smirk emoji" class="emoji-img" style="vertical-align: -10px;">
         </p>
         <div class="hero-actions">
           <a href="#projects" class="btn btn-primary">לצפייה בפרויקטים</a>
