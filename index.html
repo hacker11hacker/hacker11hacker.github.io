@@ -570,22 +570,15 @@ a { color: inherit; }
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-  padding: 8px 16px;
-  border-radius: 999px;
-  background: var(--surface-2);
-  border: 1px solid var(--border);
   text-decoration: none;
   color: var(--text);
-  font-size: 0.95rem;
-  font-weight: 500;
-  transition: border-color 0.2s ease, transform 0.15s ease;
-  overflow: hidden;
+  font-size: 1.1rem;
+  transition: transform 0.15s ease, opacity 0.2s ease;
 }
-.profile-btn:hover { border-color: var(--accent); transform: translateY(-2px); }
+.profile-btn:hover { transform: translateY(-2px); opacity: 0.8; }
 .profile-btn img {
-  width: 18px;
-  height: 18px;
+  width: 22px;
+  height: 22px;
   border-radius: 50%;
   object-fit: cover;
   display: block;
