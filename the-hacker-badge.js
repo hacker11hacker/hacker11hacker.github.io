@@ -1,6 +1,6 @@
 (function () {
   var SITE_URL = "https://hacker11hacker.github.io/";
-  var IMAGE_URL = "https://i.ibb.co/6R4d1zvK/the-hacker.png"; 
+  var IMAGE_URL = "https://i.ibb.co/twY9KNv3/the-hacker.png"; 
 
   var style = document.createElement("style");
   style.textContent =
