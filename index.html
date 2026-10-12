@@ -285,8 +285,9 @@ a { color: inherit; }
 .spinner { width: 20px; height: 20px; border-radius: 50%; border: 2px solid var(--border); border-top-color: var(--accent); animation: spin .8s linear infinite; box-shadow: var(--glow); }
 @keyframes spin { to { transform: rotate(360deg); } }
 
-.projects-grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 22px; align-items: start; perspective: 1400px; }
-.project-card { grid-column: span var(--span, 4); }
+.projects-grid { display: flex; flex-direction: column; gap: 22px; perspective: 1400px; }
+.projects-row { display: flex; flex-wrap: wrap; justify-content: center; align-items: flex-start; gap: 22px; }
+.project-card { flex: 0 1 auto; min-width: 220px; max-width: 100%; }
 .project-card {
   --mx: 50%; --my: 50%;
   position: relative; display: flex; flex-direction: column; min-width: 0;
@@ -310,8 +311,9 @@ a { color: inherit; }
     repeating-linear-gradient(135deg, transparent 0 14px, color-mix(in srgb, var(--accent) 7%, transparent) 14px 15px),
     linear-gradient(155deg, var(--surface-2), var(--accent-soft));
 }
-.project-media.no-image { aspect-ratio: 16 / 10; }
-.project-media img { display: block; width: 100%; height: auto; }
+.project-media.no-image { width: 320px; max-width: 100%; aspect-ratio: 16 / 10; }
+.project-media { display: flex; justify-content: center; }
+.project-media img { display: block; width: auto; height: auto; max-width: 100%; max-height: 280px; }
 .project-media::after { content: ""; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(to top, rgba(4,6,14,0.78), transparent 58%); }
 .project-media:not(.no-image) .fallback { display: none; }
 .project-media .fallback { position: absolute; inset: 0; display: grid; place-items: center; font-family: var(--font-mono); font-weight: 700; font-size: 4.2rem; color: var(--accent); opacity: 0.55; text-shadow: 0 0 28px var(--accent); }
@@ -322,7 +324,7 @@ a { color: inherit; }
 .project-overlay-title { position: absolute; bottom: 16px; inset-inline-start: 16px; inset-inline-end: 16px; z-index: 2; }
 .project-overlay-title h3 { font-family: var(--font-display); font-weight: 700; font-size: 1.1rem; line-height: 1.5; margin: 0; background: var(--accent); color: var(--on-accent); padding: 2px 16px; border-radius: 999px; display: inline-block; max-width: 100%; box-shadow: 0 0 22px color-mix(in srgb, var(--accent) 50%, transparent); }
 
-.project-body { padding: 18px 22px 22px; display: flex; flex-direction: column; gap: 14px; flex: 1; }
+.project-body { width: 0; min-width: 100%; padding: 18px 22px 22px; display: flex; flex-direction: column; gap: 14px; flex: 1; }
 .project-desc { color: var(--text-muted); font-size: 0.95rem; margin: 0; flex: 1; line-height: 1.65; overflow-wrap: break-word; }
 .project-link { align-self: flex-start; display: inline-flex; align-items: center; gap: 8px; color: var(--accent); font-weight: 600; font-size: 0.95rem; text-decoration: none; font-family: var(--font-display); }
 .project-link .project-arrow { display: inline-flex; transition: transform .25s ease; font-size: 1.1rem; }
@@ -355,18 +357,13 @@ a { color: inherit; }
 /* ===== Responsive ===== */
 @media (max-width: 960px) {
   .hero-inner { grid-template-columns: 1fr; gap: 36px; }
-  .projects-grid { grid-template-columns: repeat(6, 1fr); }
-  .project-card { grid-column: span 3; }
-  .project-card.is-wide { grid-column: span 6; }
-  .project-card:last-child:nth-child(odd) { grid-column: span 6; }
 }
 @media (max-width: 640px) {
   .topbar-inner { padding: 12px 16px; }
   .hero { padding: 44px 16px 36px; }
   .section-inner { padding: 0 16px; }
   .projects { padding: 56px 16px 90px; }
-  .projects-grid { grid-template-columns: 1fr; gap: 18px; }
-  .project-card, .project-card.is-wide, .project-card:last-child:nth-child(odd) { grid-column: 1 / -1; }
+  .projects-grid, .projects-row { gap: 18px; }
   .term-body { height: 210px; }
   .marquee { transform: none; margin: 0; }
 }
@@ -827,27 +824,44 @@ a:focus-visible, button:focus-visible, input:focus-visible { outline: 2px solid 
       return p.image ? `<span class="dash-icon" title="${escapeHtml(p.name)}"><img src="${escapeHtml(p.image)}" alt="" onerror="this.replaceWith(document.createTextNode('${letter}'))"></span>` : `<span class="dash-icon" title="${escapeHtml(p.name)}">${letter}</span>`;
     }).join("") + (extra > 0 ? `<span class="dash-icon">+${extra}</span>` : "");
   }
-  // Bento rhythm: card 1 wide, card 2 narrow, then pairs of (narrow, wide) rows of 5+7 / 7+5 / 4+4+4 …
-  // Builds row spans that always add up to 12 columns, so the grid never has holes:
-  // pairs alternate 7+5 / 5+7, a remainder of 3 becomes 4+4+4, a lone last card is full width.
-  function bentoSpans(total) {
-    const spans = []; let left = total, flip = false;
-    while (left > 0) {
-      if (left === 1) { spans.push(12); left -= 1; }
-      else if (left === 3) { spans.push(4, 4, 4); left -= 3; }
-      else { spans.push(...(flip ? [5, 7] : [7, 5])); flip = !flip; left -= 2; }
-    }
-    return spans;
+  /* Ordering by size.
+     A card is as wide as its image at the max image height (see CSS), so the width of every card is known
+     once its image is loaded. Cards are then paired widest-with-narrowest, and the order inside the pair
+     alternates row by row (wide→narrow, narrow→wide, …) for a symmetric zig-zag. A lone card ends up last. */
+  const IMG_MAX_H = 280, NO_IMAGE_W = 320, REF_CONTAINER_W = 1112;
+  function measureCardWidth(p) {
+    return new Promise((resolve) => {
+      if (!p.image) return resolve(NO_IMAGE_W);
+      const img = new Image();
+      const done = (w) => { img.onload = img.onerror = null; resolve(w); };
+      const t = setTimeout(() => done(NO_IMAGE_W), 4000);
+      img.onload = () => {
+        clearTimeout(t);
+        if (!img.naturalWidth || !img.naturalHeight) return done(NO_IMAGE_W);
+        done(Math.min(Math.round(IMG_MAX_H * img.naturalWidth / img.naturalHeight), REF_CONTAINER_W));
+      };
+      img.onerror = () => { clearTimeout(t); done(NO_IMAGE_W); };
+      img.src = p.image;
+    });
   }
-  function renderProjects(projects) {
+  async function arrangeBySize(projects) {
+    const widths = await Promise.all(projects.map(measureCardWidth));
+    const sorted = projects.map((p, i) => ({ p, w: widths[i], i })).sort((a, b) => b.w - a.w || a.i - b.i);
+    const rows = []; let lo = 0, hi = sorted.length - 1, flip = false;
+    while (lo < hi) { const wide = sorted[lo++], narrow = sorted[hi--]; rows.push((flip ? [narrow, wide] : [wide, narrow]).map((x) => x.p)); flip = !flip; }
+    if (lo === hi) rows.push([sorted[lo].p]);
+    return rows;
+  }
+  function renderProjects(rows) {
     document.getElementById("projects-status").hidden = true;
     const gridEl = document.getElementById("projects-grid");
-    const spans = bentoSpans(projects.length);
-    gridEl.innerHTML = projects.map((p, i) => {
+    const projects = rows.flat(); let idx = -1;
+    gridEl.innerHTML = rows.map((row) => `<div class="projects-row">${row.map((p) => {
+      idx += 1; const i = idx;
       const cta = p.buttonText || "כניסה", num = String(i + 1).padStart(2, "0"), letter = escapeHtml((p.name || "?").trim().charAt(0).toUpperCase());
       const url = safeUrl(p.link);
       return `
-      <article class="project-card reveal${spans[i] >= 7 ? " is-wide" : ""}" style="--span:${spans[i]};--d:${Math.min(i, 6) * 80}ms">
+      <article class="project-card reveal" style="--d:${Math.min(i, 6) * 80}ms">
         <div class="project-media${p.image ? "" : " no-image"}">
           <span class="fallback" aria-hidden="true">${letter}</span>
           ${p.image ? `<img src="${escapeHtml(p.image)}" alt="${escapeHtml(p.name)}" loading="lazy" onerror="this.parentNode.classList.add('no-image');this.remove()">` : ""}
@@ -860,7 +874,8 @@ a:focus-visible, button:focus-visible, input:focus-visible { outline: 2px solid 
           ${url ? `<a class="project-link" href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer"><span class="project-link-underline">${escapeHtml(cta)}</span><span class="project-arrow" aria-hidden="true">←</span></a>` : ""}
         </div>
       </article>`;
-    }).join("");
+    }).join("")}</div>`).join("");
+    state.projects = projects;               // terminal "projects" / "open N" follow the displayed order
     updateProjectCount(projects.length); renderDashIcons(projects);
     gridEl.querySelectorAll(".project-card").forEach((card) => { if (finePointer) attachSpotlight(card, reduceMotion ? 0 : 5); });
     observeReveals(gridEl);
@@ -878,7 +893,7 @@ a:focus-visible, button:focus-visible, input:focus-visible { outline: 2px solid 
       const headers = rows[0].map(normalizeHeader);
       const projects = rows.slice(1).map((r) => { const p = mapRow(headers, r, PROJECT_ALIASES); if (!p.buttonText) p.buttonText = (r[4] || "").trim(); return p; }).filter((p) => p.name);
       if (!projects.length) { showProjectsStatus({ title: "לא נמצאו פרויקטים בגיליון עדיין" }); renderDashIcons([]); setTermProjectCount(0); return; }
-      state.projects = projects; renderProjects(projects);
+      renderProjects(await arrangeBySize(projects));
     } catch (err) {
       const msg = String((err && err.message) || err), is307 = msg.includes("307");
       showProjectsStatus({ title: "לא הצלחתי לטעון את הפרויקטים", code: is307 ? "שגיאה 307: הפניה זמנית מגוגל שיטס. חכו כמה דקות אחרי הפרסום ורעננו, או ראו את ההערה ב-config.js לפתרון קבוע." : msg, isError: true });
