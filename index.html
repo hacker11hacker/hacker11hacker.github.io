@@ -42,6 +42,7 @@
   --shadow: 0 0 0 1px rgba(120,150,255,0.07), 0 24px 60px rgba(0,0,0,0.55);
   --glow: 0 0 28px rgba(0, 240, 255, 0.32);
   --rain-opacity: 0.5;
+  --img-max-h: 320px;            /* max image height = card size; JS reads this too */
   --radius-sm: 10px;
   --radius-md: 16px;
   --radius-lg: 24px;
@@ -311,15 +312,13 @@ a { color: inherit; }
     repeating-linear-gradient(135deg, transparent 0 14px, color-mix(in srgb, var(--accent) 7%, transparent) 14px 15px),
     linear-gradient(155deg, var(--surface-2), var(--accent-soft));
 }
-.project-media.no-image { width: 320px; max-width: 100%; aspect-ratio: 16 / 10; }
+.project-media.no-image { width: calc(var(--img-max-h) * 1.2); max-width: 100%; aspect-ratio: 16 / 10; }
 .project-media { display: flex; justify-content: center; }
-.project-media img { display: block; width: auto; height: auto; max-width: 100%; max-height: 280px; }
+.project-media img { display: block; width: auto; height: auto; max-width: 100%; max-height: var(--img-max-h); }
 .project-media::after { content: ""; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(to top, rgba(4,6,14,0.78), transparent 58%); }
 .project-media:not(.no-image) .fallback { display: none; }
 .project-media .fallback { position: absolute; inset: 0; display: grid; place-items: center; font-family: var(--font-mono); font-weight: 700; font-size: 4.2rem; color: var(--accent); opacity: 0.55; text-shadow: 0 0 28px var(--accent); }
 
-.project-index { position: absolute; top: 16px; inset-inline-start: 16px; z-index: 2; width: 9px; height: 9px; border-radius: 50%; background: var(--accent-2); box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent-2) 25%, transparent), 0 0 14px var(--accent-2); animation: pulse2 2.4s ease-in-out infinite; }
-@keyframes pulse2 { 50% { box-shadow: 0 0 0 8px transparent, 0 0 18px var(--accent-2); } }
 .project-num { position: absolute; top: 10px; inset-inline-end: 16px; z-index: 2; font-family: var(--font-mono); font-weight: 600; font-size: 1.1rem; color: #fff; opacity: 0.8; direction: ltr; text-shadow: 0 2px 10px rgba(0,0,0,0.6); }
 .project-overlay-title { position: absolute; bottom: 16px; inset-inline-start: 16px; inset-inline-end: 16px; z-index: 2; }
 .project-overlay-title h3 { font-family: var(--font-display); font-weight: 700; font-size: 1.1rem; line-height: 1.5; margin: 0; background: var(--accent); color: var(--on-accent); padding: 2px 16px; border-radius: 999px; display: inline-block; max-width: 100%; box-shadow: 0 0 22px color-mix(in srgb, var(--accent) 50%, transparent); }
@@ -825,10 +824,13 @@ a:focus-visible, button:focus-visible, input:focus-visible { outline: 2px solid 
     }).join("") + (extra > 0 ? `<span class="dash-icon">+${extra}</span>` : "");
   }
   /* Ordering by size.
-     A card is as wide as its image at the max image height (see CSS), so the width of every card is known
-     once its image is loaded. Cards are then paired widest-with-narrowest, and the order inside the pair
-     alternates row by row (wide→narrow, narrow→wide, …) for a symmetric zig-zag. A lone card ends up last. */
-  const IMG_MAX_H = 280, NO_IMAGE_W = 320, REF_CONTAINER_W = 1112;
+     A card is as wide as its image at the max image height (see CSS), so every card's width is known once
+     its image has loaded. Rows are then packed to the container width: each row starts with the widest card
+     left, then takes the narrowest ones that still fit, then uses any leftover room for the widest that fit —
+     so any number of narrow cards can share a row. Rows alternate direction (wide→narrow, narrow→wide, …)
+     for a symmetric zig-zag. */
+  const IMG_MAX_H = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--img-max-h")) || 320;
+  const NO_IMAGE_W = Math.round(IMG_MAX_H * 1.2), REF_CONTAINER_W = 1112, ROW_GAP = 22, CARD_BORDER = 2;
   function measureCardWidth(p) {
     return new Promise((resolve) => {
       if (!p.image) return resolve(NO_IMAGE_W);
@@ -846,10 +848,16 @@ a:focus-visible, button:focus-visible, input:focus-visible { outline: 2px solid 
   }
   async function arrangeBySize(projects) {
     const widths = await Promise.all(projects.map(measureCardWidth));
-    const sorted = projects.map((p, i) => ({ p, w: widths[i], i })).sort((a, b) => b.w - a.w || a.i - b.i);
-    const rows = []; let lo = 0, hi = sorted.length - 1, flip = false;
-    while (lo < hi) { const wide = sorted[lo++], narrow = sorted[hi--]; rows.push((flip ? [narrow, wide] : [wide, narrow]).map((x) => x.p)); flip = !flip; }
-    if (lo === hi) rows.push([sorted[lo].p]);
+    const pool = projects.map((p, i) => ({ p, w: widths[i] + CARD_BORDER, i })).sort((a, b) => b.w - a.w || a.i - b.i);
+    const fits = (used, c) => used + ROW_GAP + c.w <= REF_CONTAINER_W;
+    const rows = [];
+    while (pool.length) {
+      const row = [pool.shift()]; let used = row[0].w;
+      while (pool.length && fits(used, pool[pool.length - 1])) { const c = pool.pop(); row.push(c); used += ROW_GAP + c.w; }
+      for (let k = pool.findIndex((c) => fits(used, c)); k >= 0; k = pool.findIndex((c) => fits(used, c))) { const [c] = pool.splice(k, 1); row.push(c); used += ROW_GAP + c.w; }
+      row.sort((a, b) => (rows.length % 2 === 0 ? b.w - a.w : a.w - b.w) || a.i - b.i);
+      rows.push(row.map((x) => x.p));
+    }
     return rows;
   }
   function renderProjects(rows) {
@@ -865,7 +873,6 @@ a:focus-visible, button:focus-visible, input:focus-visible { outline: 2px solid 
         <div class="project-media${p.image ? "" : " no-image"}">
           <span class="fallback" aria-hidden="true">${letter}</span>
           ${p.image ? `<img src="${escapeHtml(p.image)}" alt="${escapeHtml(p.name)}" loading="lazy" onerror="this.parentNode.classList.add('no-image');this.remove()">` : ""}
-          <span class="project-index" aria-hidden="true"></span>
           <span class="project-num" aria-hidden="true">#${num}</span>
           <div class="project-overlay-title"><h3>${escapeHtml(p.name || "פרויקט ללא שם")}</h3></div>
         </div>
